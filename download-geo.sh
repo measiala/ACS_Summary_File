@@ -30,5 +30,25 @@ echo "YYYY=$YYYY PER=$PER"
 
 mkdir -p "./webarchive"
 mkdir -p "./geo"
+mkdir -p "./data"
+mkdir -p "./input"
 
-#wget https://www2.census.gov/programs-surveys/acs/summary_file/${YYYY}/data/${PER}_year_entire_sf/${YYYY}_ACS_Geography_Files.zip
+if [ $PER == "5" ]; then
+    GEOFILE=${YYYY}_ACS_Geography_Files.zip
+    OUTFILE=${YYYY}_${PER}_Year_ACS_Geography_Files.zip
+    ZIPDIR=geo/
+    GEODIR=./
+elif [ $PER == "1" ]; then
+    GEOFILE=All_Geographies.zip
+    OUTFILE=
+    ZIPDIR=
+    GEODIR=./geo
+fi
+OUTFILE=${YYYY}_${PER}_Year_ACS_Geography_Files.zip
+LKUPFILE=ACS_${PER}yr_Seq_Table_Number_Lookup.txt
+
+wget -nc -O ./webarchive/$OUTFILE https://www2.census.gov/programs-surveys/acs/summary_file/${YYYY}/data/${PER}_year_entire_sf/$GEOFILE
+
+unzip -naL -d $GEODIR ./webarchive/$OUTFILE ${ZIPDIR}g${YYYY}${PER}??.csv
+
+wget -nc -O ./webarchive/$LKUPFILE https://www2.census.gov/programs-surveys/acs/summary_file/2016/documentation/user_tools/$LKUPFILE

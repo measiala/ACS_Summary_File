@@ -1,2 +1,7 @@
 
 *~
+*.swp
+data/*
+geo/*
+input/*
+webarchive/*
