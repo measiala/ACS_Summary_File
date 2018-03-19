@@ -44,6 +44,7 @@ state_name_abbrev = {
     'South Dakota': 'SD',
     'Tennessee': 'TN',
     'Texas': 'TX',
+    'United States': 'US',
     'Utah': 'UT',
     'Vermont': 'VT',
     'Virginia': 'VA',
@@ -99,6 +100,7 @@ acssf_state_name_abbrev = {
     'SouthDakota': 'SD',
     'Tennessee': 'TN',
     'Texas': 'TX',
+    'UnitedStates': 'US',
     'Utah': 'UT',
     'Vermont': 'VT',
     'Virginia': 'VA',
@@ -154,6 +156,7 @@ abbrev_state_name = {
     'SD': 'South Dakota',
     'TN': 'Tennessee',
     'TX': 'Texas',
+    'US': 'United States',
     'UT': 'Utah',
     'VT': 'Vermont',
     'VA': 'Virginia',
@@ -209,6 +212,7 @@ acssf_abbrev_state_name = {
     'SD': 'SouthDakota',
     'TN': 'Tennessee',
     'TX': 'Texas',
+    'US': 'UnitedStates',
     'UT': 'Utah',
     'VT': 'Vermont',
     'VA': 'Virginia',
@@ -219,6 +223,7 @@ acssf_abbrev_state_name = {
 }
 
 fips_state_name = {
+    '00': 'United States',
     '01': 'Alabama',
     '02': 'Alaska',
     '03': 'Skip -- American Samoa',
@@ -279,6 +284,7 @@ fips_state_name = {
 }
 
 acssf_fips_state_name = {
+    '00': 'UnitedStates',
     '01': 'Alabama',
     '02': 'Alaska',
     '03': 'Skip -- American Samoa',

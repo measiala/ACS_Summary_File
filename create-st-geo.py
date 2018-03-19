@@ -58,7 +58,9 @@ def down_load_geo(nst):
     urllib.request.urlretrieve(STURL,GEOPATH + FILENAME)
 
 ## Download state-level csv files into geo directory
+
 print("Downloads beginning.")
+down_load_geo(00)
 for nst in range(1,57):
     if not nst in [3,7,14,43,52]:
         down_load_geo(nst)
@@ -78,13 +80,11 @@ with open(DATAPATH + ROOTFILE + ".csv","w") as outfile:
         laycsv = csv.reader(layfile)
         for row in laycsv:
             row[0] = 'MATCHID'
-            del row[4]
         outcsv.writerow(row)
     for csvfile in csvfiles:
         with open(GEOPATH + csvfile,"r",encoding='ISO-8859-1') as infile:
             incsv = csv.reader(infile,quotechar='"')
             for row in incsv:
                 row[0] = row[1].lower() + row[4]
-                del row[4]
                 outcsv.writerow(row)
 print("US-level file complete.")
