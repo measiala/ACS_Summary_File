@@ -6,12 +6,16 @@ The revised set of programs will be written in python where possible for more ef
 
 Current goals are the following:
 
-0. Remove dependency on shell scripts to provide python3 only solution (nearing completion)
+1. Remove dependency on shell scripts to provide python3 only solution (nearing completion)
 
-1. Allow user specified year and period for the source dataset. (done)
+2. Allow user specified year and period for the source dataset. (done)
 
-2. Allow specification of table ids and summary level. Ideally also include ability to use wildcards. (Only startswith capability so far)
+3. Allow specification of table ids and summary level. Ideally also include ability to use wildcards. (Only startswith capability so far)
 
-3. Either dynamically pull down the necessary datasets or use locally cached files based on availability. (currently always pulls)
+4. Either dynamically pull down the necessary datasets or use locally cached files based on availability. (done)
 
-4. In the long-term, create a useful enough program to share broadly. (not yet!)
+5. Unzip the files from within python (done)
+
+6. Assemble the datasets into a useful form (todo)
+
+7. In the long-term, create a useful enough program to share broadly. (not yet!)
