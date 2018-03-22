@@ -6,9 +6,12 @@ import sys
 import csv
 import urllib.request
 import zipfile
+from multiprocessing.dummy import Pool
 
 from fipsname import acssf_postal_to_name
 from gen_funcs import is_number, is_integer, param_def, process_args
+
+THREADS=4
 
 param_list = process_args(sys.argv,['YYYY','PER','TBLID','SUMLVL'],['ST','CMP'])
 for param in param_list:
@@ -88,7 +91,16 @@ print("Need to download files from ",stlist)
 BASEURL = 'https://www2.census.gov/programs-surveys/acs/summary_file/' \
           + YYYY + '/data/' + PER + '_year_seq_by_state/'
 
+st_seq_list = []
 for st in stlist:
+    for seq in seqlist:
+        st_seq_list.append([st,seq])
+#print(st_seq_list)
+        
+def get_data(st_seq):
+    #print(st_seq)
+    st = st_seq[0]
+    seq = st_seq[1]
     stname = acssf_postal_to_name(st)
     st = st.lower()
     
@@ -102,29 +114,25 @@ for st in stlist:
         else:
             SEQURL = BASEURL + stname + "/All_Geographies_Not_Tracts_Block_Groups/"
 
-    for seq in seqlist:
-        FILENAME = YYYY + PER + st + seq + '000.zip'
-        print('URI: ',SEQURL + FILENAME)
-        # We should test for existence of file to avoid unnecessary downloads here need SUMLVL check tho
-        if not os.path.isfile(ARCHPATH + FILENAME):
-            try:
-                urllib.request.urlretrieve(SEQURL + FILENAME,ARCHPATH + FILENAME)
-                print("Downloaded")
-            except urllib.error.HTTPError as e:
-                print(e)
-        else:
-            print("File exists -- skipping")
+    FILENAME = YYYY + PER + st + seq + '000.zip'
+    print('URI: ',SEQURL + FILENAME)
 
-        if zipfile.is_zipfile(ARCHPATH + FILENAME):
-            print("Extracting ",FILENAME)
-            archive = zipfile.ZipFile(ARCHPATH + FILENAME,"r")
-            for file in archive.namelist():
-                if not os.path.isfile(INPUTPATH + file):
-                    archive.extract(file,path=INPUTPATH)
-            archive.close()
-            
-#########################
+    if not os.path.isfile(ARCHPATH + FILENAME):
+        try:
+            urllib.request.urlretrieve(SEQURL + FILENAME,ARCHPATH + FILENAME)
+            print(FILENAME + " Downloaded")
+        except urllib.error.HTTPError as e:
+            print(e)
+    else:
+        print(FILENAME + " File exists -- skipping")
 
-#for st in stlist:
-#    for row
-#    st = st.lower()
+    if zipfile.is_zipfile(ARCHPATH + FILENAME):
+        print("Extracting ",FILENAME)
+        archive = zipfile.ZipFile(ARCHPATH + FILENAME,"r")
+        for file in archive.namelist():
+            if not os.path.isfile(INPUTPATH + file):
+                archive.extract(file,path=INPUTPATH)
+        archive.close()
+
+result= Pool(THREADS).map(get_data,st_seq_list) # download 4 files at a time
+      
