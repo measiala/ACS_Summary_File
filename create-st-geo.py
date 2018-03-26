@@ -21,6 +21,13 @@ BASEURL = 'https://www2.census.gov/programs-surveys/acs/summary_file/' \
           + YYYY + '/data/' + PER + '_year_seq_by_state/'
 ROOTFILE='g' + YYYY + PER
 
+GEOLAYDIR = './geo/'
+GEOLAY= 'gyyyyp'
+
+# old definition
+# GEOLAYDIR = GEOPATHYY
+# GEOLAY= 'g' + YYYY + PER
+
 def down_load_geo(nst):
     st = str(nst).zfill(2)
     stname = acssf_fips_to_name(st)
@@ -59,7 +66,7 @@ csvfiles = sorted(fnmatch.filter(files,ROOTFILE + '??.csv'))
 print("Create US-level file.")
 with open(DATAPATH + ROOTFILE + ".csv","w") as outfile:
     outcsv = csv.writer(outfile,quoting=csv.QUOTE_MINIMAL)
-    with open(GEOPATHYY + 'g' + YYYY + '.lay',"r") as layfile:
+    with open(GEOLAYDIR + GEOLAY + '.lay',"r") as layfile:
         laycsv = csv.reader(layfile)
         for row in laycsv:
             row[0] = 'MATCHID'
