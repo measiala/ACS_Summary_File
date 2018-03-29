@@ -2,6 +2,7 @@
 
 import os.path
 import sys
+import time
 
 import csv
 import urllib.request
@@ -11,7 +12,7 @@ from multiprocessing.dummy import Pool
 from fipsname import acssf_postal_to_name
 from gen_funcs import is_number, is_integer, param_def, process_args
 
-THREADS=4
+THREADS=1
 
 param_list = process_args(sys.argv,['YYYY','PER','TBLID','SUMLVL'],['ST','CMP'])
 for param in param_list:
@@ -26,6 +27,8 @@ INPUTPATH='./input/'     + YYP
 
 SEQFILE='ACS_' + YYYY + '_' + PER + '_Year_Seq_Table_Number_Lookup.txt'
 GEOFILE='g' + YYYY + PER + '.csv'
+
+start_time = time.time()
 
 # Input Table (e.g., B25001) or Series (e.g., B25)
 
@@ -95,7 +98,8 @@ st_seq_list = []
 for st in stlist:
     for seq in seqlist:
         st_seq_list.append([st,seq])
-#print(st_seq_list)
+
+prep_time = time.time()
         
 def get_data(st_seq):
     #print(st_seq)
@@ -103,32 +107,41 @@ def get_data(st_seq):
     seq = st_seq[1]
     stname = acssf_postal_to_name(st)
     st = st.lower()
-    
+
+
+    # Webname is same for all zip files
+    BASEFILE = YYYY + PER + st + seq
+
     if PER == '1':
         SEQURL = BASEURL + stname + "/"
+        code = '000'
     elif PER == '5':
         if st == 'dc':
             stname = stname.replace("of","Of")
         if SUMLVL in ['140','150']:
             SEQURL = BASEURL + stname + "/Tracts_Block_Groups_Only/"
+            code = '140'
         else:
             SEQURL = BASEURL + stname + "/All_Geographies_Not_Tracts_Block_Groups/"
+            code = '000'
 
-    FILENAME = YYYY + PER + st + seq + '000.zip'
+    INFILENAME  = BASEFILE + '000' + '.zip'
+    OUTFILENAME = BASEFILE + code  + '.zip'
+    
     print('URI: ',SEQURL + FILENAME)
 
-    if not os.path.isfile(ARCHPATH + FILENAME):
+    if not os.path.isfile(ARCHPATH + OUTFILENAME):
         try:
-            urllib.request.urlretrieve(SEQURL + FILENAME,ARCHPATH + FILENAME)
+            urllib.request.urlretrieve(SEQURL + INFILENAME,ARCHPATH + OUTFILENAME)
             print(FILENAME + " Downloaded")
         except urllib.error.HTTPError as e:
             print(e)
     else:
-        print(FILENAME + " File exists -- skipping")
+        print(OUTFILENAME + " File exists -- skipping")
 
-    if zipfile.is_zipfile(ARCHPATH + FILENAME):
-        print("Extracting ",FILENAME)
-        archive = zipfile.ZipFile(ARCHPATH + FILENAME,"r")
+    if zipfile.is_zipfile(ARCHPATH + INFILENAME):
+        print("Extracting ", INFILENAME)
+        archive = zipfile.ZipFile(ARCHPATH + INFILENAME,"r")
         for file in archive.namelist():
             if not os.path.isfile(INPUTPATH + file):
                 archive.extract(file,path=INPUTPATH)
@@ -136,3 +149,7 @@ def get_data(st_seq):
 
 result= Pool(THREADS).map(get_data,st_seq_list) # download 4 files at a time
       
+end_time = time.time()
+
+print("Prep time %s seconds" % (prep_time - start_time))
+print("Download and extract time %s seconds" % (end_time - prep_time))

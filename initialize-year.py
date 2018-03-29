@@ -34,9 +34,12 @@ BASEURL = 'https://www2.census.gov/programs-surveys/acs/summary_file/' \
 INTBLFILE = 'ACS_' + PER + 'yr_Seq_Table_Number_Lookup.txt'
 TBLFILE = 'ACS_' + YYYY + '_' + PER + '_Year_Seq_Table_Number_Lookup.txt'
 
-print("Retriving ",BASEURL + INTBLFILE)
-try:
-    urllib.request.urlretrieve(BASEURL + INTBLFILE,ARCHPATH + TBLFILE)
-except urllib.error.HTTPError as e:
-    print(e)
+if not os.path.isfile(ARCHPATH + TBLFILE):
+    print("Retrieving ",BASEURL + INTBLFILE)
+    try:
+        urllib.request.urlretrieve(BASEURL + INTBLFILE,ARCHPATH + TBLFILE)
+    except urllib.error.HTTPError as e:
+        print(e)
+else:
+    print("File Exists ",ARCHPATH + TBLFILE)
 

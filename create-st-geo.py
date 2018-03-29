@@ -45,7 +45,14 @@ def down_load_geo(nst):
 
     print(STURL)
 
-    urllib.request.urlretrieve(STURL,GEOPATH + FILENAME)
+    if not os.path.isfile(GEOPATH + FILENAME):
+        try:
+            urllib.request.urlretrieve(STURL,GEOPATH + FILENAME)
+            print("Downloaded ",FILENAME)
+        except urllib.error.HTTPError as e:
+            print(FILENAME + ': ' + e)
+    else:
+        print("Skipping ",FILENAME)
 
 ## Download state-level csv files into geo directory
 
