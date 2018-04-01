@@ -3,6 +3,8 @@
 *.swp
 \#*
 .\#*
+test/*
+old/*
 data/*
 geo/*
 input/*

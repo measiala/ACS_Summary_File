@@ -78,9 +78,7 @@ def process_args(argv,mand_list,opt_list=[]):
                             print("Summary level is not a legal value.")
                             exit(2)
                     elif param == 'CMP':
-                        if value == '00':
-                            CMP = '00'
-                        else:
+                        if not len(value) == 2:
                             print("Illegal component code.")
                             exit(2)
                     elif param == 'ST':
@@ -104,6 +102,16 @@ def process_args(argv,mand_list,opt_list=[]):
                 elif PER == '3' and not (int(YYYY) > 2006 and int(YYYY) < 2014):
                     print("ACS 3-year data (PER=3) exists only for YYYY=2007-2013.")
                     exit(2)
+                if 'CMP' in locals() or 'CMP' in globals():
+                    INPUTPATH = './input/' + YYYY + '/' + PER + '/'
+                    with open(INPUTPATH + 'sumlvl_dict.csv','r') as infile:
+                        incsv = csv.reader(infile)
+                        sumlvl_dict = {}
+                        for row in incsv:
+                            sumlvl_dict[row[0]] = row[1]
+                else:
+                    # if CMP is not defined then set default component to 00
+                    return_list.append(['CMP','00'])
             else:
                 # This is only if mandatory list is misspecified.
                 print("The parameter PER must be used in conjunction with YYYY.")

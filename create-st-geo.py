@@ -5,10 +5,13 @@ import os
 import csv
 import fnmatch
 import urllib.request
-from gen_funcs import is_number, is_integer, param_def, process_args
+from multiprocessing.dummy import Pool
+
+from gen_funcs import process_args
 from fipsname import acssf_name_to_postal, acssf_fips_to_name
 
-#print(sys.argv)
+THREADS=1
+
 param_list = process_args(sys.argv,['YYYY','PER'])
 for param in param_list:
     globals()[param[0]] = param[1]
@@ -28,22 +31,26 @@ GEOLAY= 'gyyyyp'
 # GEOLAYDIR = GEOPATHYY
 # GEOLAY= 'g' + YYYY + PER
 
-def down_load_geo(nst):
-    st = str(nst).zfill(2)
+fips_list = ['00']
+for nst in range(1,57):
+    if not nst in [3,7,14,43,52]:
+        st = str(nst).zfill(2)
+        fips_list.append(st)
+fips_list.append('72')
+
+def download_geo(st):
     stname = acssf_fips_to_name(st)
     pstcode = acssf_name_to_postal(stname).lower()
 
     if PER == '1':
         URLPATH = BASEURL + stname + "/"
     elif PER == '5':
-        if nst == 11:
+        if st == '11':
             stname = stname.replace("of","Of")
         URLPATH = BASEURL + stname + "/Tracts_Block_Groups_Only/"
 
     FILENAME =  ROOTFILE + pstcode + '.csv'
     STURL = URLPATH + FILENAME
-
-    print(STURL)
 
     if not os.path.isfile(GEOPATH + FILENAME):
         try:
@@ -55,13 +62,9 @@ def down_load_geo(nst):
         print("Skipping ",FILENAME)
 
 ## Download state-level csv files into geo directory
-
 print("Downloads beginning.")
-down_load_geo(00)
-for nst in range(1,57):
-    if not nst in [3,7,14,43,52]:
-        down_load_geo(nst)
-down_load_geo(72)
+
+result= Pool(THREADS).map(download_geo, fips_list) # download 4 files at a time
 
 print("Downloads complete.")
 
